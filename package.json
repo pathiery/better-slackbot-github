@@ -1,0 +1,27 @@
+{
+  "name": "better-slackbot-github",
+  "version": "0.0.1",
+  "description": "A better slackbot to manage your Github activity",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pathiery/better-slackbot-github.git"
+  },
+  "keywords": [
+    "slack",
+    "github",
+    "activity",
+    "pr",
+    "pull-request",
+    "slackbot"
+  ],
+  "author": "pathiery@coveo.com",
+  "license": "Beerware",
+  "bugs": {
+    "url": "https://github.com/pathiery/better-slackbot-github/issues"
+  },
+  "homepage": "https://github.com/pathiery/better-slackbot-github#readme"
+}

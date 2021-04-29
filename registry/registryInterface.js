@@ -11,7 +11,7 @@ const writeRegistry = async (data) => {
   await fs.writeFile(registryPath, updatedRegistryData);
 }
 
-const addUserToRegistry = async (userId, userName) => {
+const addUser = async (userId, userName) => {
   const registry = await readRegistry();
   if (!registry[userId]) {
     registry[userId] = {
@@ -22,16 +22,17 @@ const addUserToRegistry = async (userId, userName) => {
   await writeRegistry(registry);
 }
 
-const getAllUserTokensFromRegistry = async () => {
-  const registry = readRegistry();
-  return Object.keys(registry).reduce((acc, curr) => {
-    if (registry[curr].githubToken && registry[curr].githubToken.length){
-      acc.push(registry[curr].githubToken)
-    }
-  }, []);
+const getUser = async (userId) => {
+  const registry = await readRegistry();
+  if(!registry[userId]){
+    throw new Error(`User not foud: ${userId}`)
+  }
+  return registry[userId];
 }
 
-const addUserTokenToRegistry = async (userId, token) => {
+const getAllUsers = async () => readRegistry();
+
+const addGithubTokenToUser = async (userId, token) => {
   const registry = await readRegistry();
   if(registry[userId]){
     registry[userId].githubToken = token;
@@ -39,7 +40,51 @@ const addUserTokenToRegistry = async (userId, token) => {
   await writeRegistry(registry);
 }
 
-const removeUserFromRegistry = async (userId) => {
+const addGithubIdToUser = async (userId, githubId) => {
+  const registry = await readRegistry();
+  if (registry[userId]) {
+    registry[userId].githubId = githubId;
+  }
+  await writeRegistry(registry);
+}
+
+const setUserPullRequests = async (userId, pullRequestList) => {
+  const registry = await readRegistry();
+  if (registry[userId]) {
+    registry[userId].pullRequests = pullRequestList.reduce((acc, curr) => {
+      acc[curr] = null;
+      return acc;
+    }, {});
+  }
+  await writeRegistry(registry);
+}
+
+const swapUserPullRequests = async (userId, pullRequestList) => {
+  let previousPullRequestMap;
+  let modifications = {added: [], deleted: []};
+  try {
+    const user = await getUser(userId);
+    previousPullRequestMap = user.pullRequests || {};
+  } catch (e) {
+    console.error(e.message);
+    return modifications;
+  }
+  modifications = pullRequestList.reduce((acc, currentPullRequestUrl, i) => {
+    if (!previousPullRequestMap[currentPullRequestUrl] || !previousPullRequestMap[currentPullRequestUrl].length) {
+      acc.added.push(currentPullRequestUrl);
+    } else {
+      delete previousPullRequestMap[currentPullRequestUrl]
+    }
+    if (i === pullRequestList.length) {
+      acc.deleted = Object.keys(previousPullRequestMap);
+    }
+    return acc
+  }, modifications);
+  setUserPullRequests(pullRequestList);
+  return modifications;
+}
+
+const removeUser = async (userId) => {
   const registry = readRegistry();
   if (registry[userId]) {
     delete registry[userId]
@@ -48,8 +93,11 @@ const removeUserFromRegistry = async (userId) => {
 }
 
 module.exports = {
-  addUserToRegistry,
-  removeUserFromRegistry,
-  addUserTokenToRegistry,
-  getAllUserTokensFromRegistry,
+  addUser,
+  removeUser,
+  getUser,
+  addGithubTokenToUser,
+  addGithubIdToUser,
+  getAllUsers,
+  swapUserPullRequests,
 }

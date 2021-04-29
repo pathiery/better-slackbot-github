@@ -1,6 +1,7 @@
 const { createOAuthDeviceAuth } = require("@octokit/auth-oauth-device");
+const { Octokit } = require("@octokit/rest");
 const sendMessageToUser = require("../slackbot/sendMessageToUser");
-const { addUserTokenToRegistry } = require('../registry/registryInterface');
+const { addGithubTokenToUser, addGithubIdToUser } = require('../registry/registryInterface');
 
 const authenticateWithGithub = async (userId) => {
   const auth = createOAuthDeviceAuth({
@@ -14,7 +15,13 @@ const authenticateWithGithub = async (userId) => {
   const tokenAuthentication = await auth({
     type: 'oauth',
   })
-  addUserTokenToRegistry(userId, tokenAuthentication.token)
+  console.log('🔥', tokenAuthentication);
+  await addGithubTokenToUser(userId, tokenAuthentication.token);
+  const userOctokit = new Octokit({
+    auth: tokenAuthentication.token
+  });
+  const { data: { id: githubId } } = await userOctokit.rest.users.getAuthenticated();
+  await addGithubIdToUser(userId, githubId);
 }
 
 module.exports = authenticateWithGithub;

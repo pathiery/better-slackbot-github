@@ -6,7 +6,13 @@ const web = new WebClient(token);
 const sendMessageToUser = async (userId, text) => {
   const res = await web.chat.postMessage({
     channel: userId,
-    text,
+    blocks: [{
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text,
+      }
+    }],
     as_user: true,
   })
   return res.ts;

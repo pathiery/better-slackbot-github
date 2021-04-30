@@ -26,7 +26,6 @@ const createUserWebhookFromRepoURL = async (userId, url) => {
   }
   if(!usersSubscribed || usersSubscribed.length === 0) {
     const webhookId = await registerWebhookForRepo(url);
-    console.log('🔥', webhookId);
     await setWebhookId(url, webhookId);
   }
   await addUserSubscribedToWebHook(url, userId);

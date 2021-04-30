@@ -30,7 +30,18 @@ const getUser = async (userId) => {
   return registry[userId];
 }
 
+
 const getAllUsers = async () => readRegistry();
+
+const getUserSlackIdFromGithubId = async (githubId) => {
+  const registry = await readRegistry();
+  return Object.keys(registry).reduce((acc, curr) => { 
+    if (registry[curr].githubId === githubId) {
+      acc = curr
+    }
+    return acc;
+  }, null);
+}
 
 const addGithubTokenToUser = async (userId, token) => {
   const registry = await readRegistry();
@@ -100,4 +111,5 @@ module.exports = {
   addGithubIdToUser,
   getAllUsers,
   swapUserPullRequests,
+  getUserSlackIdFromGithubId,
 }

@@ -20,7 +20,7 @@ const startStopBotHandler = async (request, response) => {
       response.send();
       await addUser(body.user_id, body.user_name)
       await authenticateWithGithub(body.user_id);
-      sendMessageToUser(body.user_id, 'Got you ! Starting the authentication flow with Github')
+      sendMessageToUser(body.user_id, 'Got you ! We\'ll start tracking your Pull Requests in a second... :rocket:')
       break;
     case '/stop':
       await clearUserFromDB(bpdy.user_id);

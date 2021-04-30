@@ -8,7 +8,7 @@ const authenticateWithGithub = async (userId) => {
     clientType: 'github-app',
     clientId: process.env.GITHUB_APP_CLIENT_ID,
     onVerification({verification_uri, user_code}) {
-      sendMessageToUser(userId, `Open ${verification_uri} and enter ${user_code}`)
+      sendMessageToUser(userId, `:wave: Hello new user ! Open ${verification_uri} and enter ${user_code}`)
 
     }
   })
